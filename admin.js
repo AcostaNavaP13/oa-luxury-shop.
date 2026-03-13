@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 sessionStorage.setItem("admin_logged", "true");
                 showDashboard();
             } else {
-                alert("Contraseña incorrecta. Intenta con 'Pruebas1234$'");
+                alert("Contraseña incorrecta. Acceso denegado.");
             }
         });
     }
