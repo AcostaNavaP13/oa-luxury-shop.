@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel de Administrador</title>
+    <!-- Use Inter font to simulate iOS / Apple design -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="admin-body">
+    <!-- Top Navigation Bar -->
+    <nav class="ios-nav">
+        <div class="nav-content">
+            <img src="logo.png" alt="O&A Luxury" style="height: 64px; object-fit: contain;">
+            <a href="index.html" class="nav-link">Ver Catálogo</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container admin-container">
+        
+        <!-- Login Section -->
+        <section id="login-section" class="ios-card auth-card">
+            <h2>Acceso a Inventario</h2>
+            <p>Ingresa para gestionar los productos.</p>
+            <form id="login-form">
+                <input type="password" id="password" placeholder="Contraseña" required class="ios-input" />
+                <button type="submit" class="ios-btn primary-btn">Ingresar</button>
+            </form>
+        </section>
+
+        <!-- Dashboard Section (Hidden by default) -->
+        <section id="dashboard-section" style="display: none;">
+            <!-- Form to Add Product -->
+            <div class="ios-card form-card">
+                <h2>Añadir Nuevo Producto</h2>
+                <form id="product-form" class="product-form">
+                    <input type="text" id="prod-name" placeholder="Nombre del producto" required class="ios-input" />
+                    <input type="number" id="prod-price" placeholder="Precio ($)" step="0.01" required class="ios-input" />
+                    <input type="number" id="prod-qty" placeholder="Cantidad Disponible" required class="ios-input" />
+                    <label for="prod-image" style="display: block; margin-bottom: 8px; font-weight: 600; color: #1C1C1E; font-size: 14px;">Imagen del producto:</label>
+                    <input type="file" id="prod-image" accept="image/*" required class="ios-input" style="padding: 12px; background: #fff;" />
+                    <button type="submit" class="ios-btn primary-btn">Guardar Producto</button>
+                </form>
+            </div>
+
+            <!-- Form to Configure WhatsApp -->
+            <div class="ios-card form-card" style="margin-bottom: 24px;">
+                <h2>Configuración de Tienda</h2>
+                <form id="settings-form" class="product-form">
+                    <label for="whatsapp-number" style="display: block; margin-bottom: 8px; font-weight: 600; color: #1C1C1E; font-size: 14px;">Número de WhatsApp (con código de país, ej. 52...):</label>
+                    <input type="text" id="whatsapp-number" required class="ios-input" />
+                    <button type="submit" class="ios-btn primary-btn" style="background-color: var(--apple-green);">Guardar WhatsApp</button>
+                </form>
+            </div>
+
+            <div class="inventory-section">
+                <h2>Inventario Actual</h2>
+                <!-- Product List Table -->
+                <div class="ios-card table-card">
+                    <table class="ios-table">
+                        <thead>
+                            <tr>
+                                <th>IMG</th>
+                                <th>Nombre</th>
+                                <th>Precio</th>
+                                <th>Stock</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody id="admin-product-list">
+                            <!-- Injected by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <button id="logout-btn" class="ios-btn secondary-btn" style="margin-top: 24px; color: #FF3B30;">Cerrar Sesión</button>
+        </section>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="data.js"></script>
+    <script src="admin.js"></script>
+</body>
+</html>

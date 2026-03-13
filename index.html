@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catálogo de Productos</title>
+    <!-- Use Inter font to simulate iOS / Apple design -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="ios-nav">
+        <div class="nav-content">
+            <img src="logo.png" alt="O&A Luxury" style="height: 64px; object-fit: contain;">
+            <a href="admin.html" class="nav-link">Acceso Admin</a>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container">
+        <header class="page-header">
+            <h2>Descubre nuestros productos</h2>
+            <p>Selecciona lo que necesites y pídelo fácil por WhatsApp.</p>
+        </header>
+
+        <!-- Product Grid -->
+        <div id="product-grid" class="grid">
+            <!-- Products will be injected here via JavaScript -->
+        </div>
+    </main>
+
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>
+    <script src="data.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
