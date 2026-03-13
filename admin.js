@@ -1,3 +1,9 @@
+const ICON_SAVE = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>`;
+const ICON_PHOTO = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>`;
+const ICON_TRASH = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>`;
+const ICON_WAIT = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>`;
+const ICON_CHECK = `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>`;
+
 document.addEventListener("DOMContentLoaded", () => {
     
     const loginForm = document.getElementById("login-form");
@@ -117,6 +123,51 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    const csvForm = document.getElementById("csv-form");
+    if (csvForm) {
+        csvForm.addEventListener("submit", async(e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById("csv-file");
+            if (!fileInput.files || !fileInput.files[0]) return;
+            
+            const btn = e.target.querySelector("button[type=submit]");
+            btn.innerText = "Procesando productos...";
+            btn.disabled = true;
+
+            const reader = new FileReader();
+            reader.onload = async function(event) {
+                const text = event.target.result;
+                const rows = text.split('\n');
+                let count = 0;
+                
+                // Empezar desde i=1 para evitar los nombres de las columnas (Nombre,Precio,Cantidad)
+                for(let i = 1; i < rows.length; i++) {
+                    const line = rows[i].trim();
+                    if (!line) continue;
+                    const row = line.split(',');
+                    // Tiene que tener 3 columnas minimo
+                    if (row.length >= 3) {
+                        const name = row[0].trim();
+                        const price = parseFloat(row[1]);
+                        const qty = parseInt(row[2], 10);
+                        if (name && !isNaN(price) && !isNaN(qty)) {
+                            // Subimos producto sin imagenes inicialmente
+                            await Database.addProduct({ name: name, price: price, quantity: qty, imageUrls: [] });
+                            count++;
+                        }
+                    }
+                }
+                
+                alert(`¡Éxito! Se importaron ${count} productos correctamente. Ahora puedes subir sus fotos desde la tabla.`);
+                btn.innerText = "Cargar .CSV";
+                btn.disabled = false;
+                csvForm.reset();
+                await renderAdminTable();
+            };
+            reader.readAsText(fileInput.files[0]);
+        });
+    }
 });
 
 async function renderAdminTable() {
@@ -146,9 +197,10 @@ async function renderAdminTable() {
                 <td>
                     <input type="number" value="${p.quantity}" class="ios-input" style="width:70px; margin:0; padding:8px" id="stock-${p.id}" />
                 </td>
-                <td>
-                    <button class="action-btn" style="background:#E5E5EA; color:#000; margin-bottom: 5px;" onclick="updateProductInfo('${p.id}', this)">Guardar</button>
-                    <button class="action-btn btn-delete" onclick="deleteProduct('${p.id}')">Eliminar</button>
+                <td style="white-space: nowrap;">
+                    <button class="action-btn" onclick="updateProductInfo('${p.id}', this)" title="Guardar cambios de Precio/Stock">${ICON_SAVE}</button>
+                    <button class="action-btn" onclick="openImageModal('${p.id}', '${p.name}')" title="Gestionar Fotos">${ICON_PHOTO}</button>
+                    <button class="action-btn btn-delete" onclick="deleteProduct('${p.id}')" title="Eliminar Producto">${ICON_TRASH}</button>
                 </td>
             `;
 
@@ -178,22 +230,154 @@ window.updateProductInfo = async function(id, btn) {
     const newPrice = parseFloat(priceInput.value);
     const newStock = parseInt(stockInput.value, 10);
     
-    if(btn) btn.innerText = "Modificando...";
+    if(btn) btn.innerHTML = ICON_WAIT;
     
     try {
         await Database.updateProductInfo(id, newPrice, newStock);
-        alert("Nube Actualizada - Precio: $" + newPrice + " / Stock: " + newStock);
         if(btn) {
-            btn.innerText = "Guardar";
-            btn.style.backgroundColor = "#34C759";
-            btn.style.color = "#fff";
+            btn.innerHTML = ICON_CHECK;
+            btn.style.color = "#34C759";
+            btn.style.borderColor = "#34C759";
             setTimeout(() => {
-                btn.style.backgroundColor = "#E5E5EA";
-                btn.style.color = "#000";
+                btn.innerHTML = ICON_SAVE;
+                btn.style.color = "var(--text-primary)";
+                btn.style.borderColor = "#E5E5EA";
             }, 1000);
         }
     } catch(err) {
-         if(btn) btn.innerText = "Guardar";
+         if(btn) btn.innerHTML = ICON_SAVE;
          alert("Hubo un error de sincronización: " + err.message);
     }
 }
+
+// ==========================================
+// Image Management Modal Logic
+// ==========================================
+let currentProductId = null;
+let currentImageUrls = [];
+
+window.openImageModal = async function(id, name) {
+    currentProductId = id;
+    document.getElementById("modal-title").innerText = `Fotos: ${name}`;
+    document.getElementById("image-modal").style.display = "flex";
+    
+    // Fetch product latest data
+    try {
+        const doc = await db.collection("products").doc(id).get();
+        if(doc.exists) {
+            currentImageUrls = doc.data().imageUrls || [];
+            // Compatibilidad vieja
+            if(currentImageUrls.length === 0 && doc.data().imageUrl) {
+                currentImageUrls = [doc.data().imageUrl];
+            }
+            renderModalImages();
+        }
+    } catch(e) { console.error(e); }
+};
+
+window.closeImageModal = function() {
+    document.getElementById("image-modal").style.display = "none";
+    currentProductId = null;
+    currentImageUrls = [];
+    renderAdminTable(); // Refresh table to show visual changes
+};
+
+function renderModalImages() {
+    const grid = document.getElementById("modal-images-grid");
+    grid.innerHTML = "";
+    
+    if(currentImageUrls.length === 0) {
+        grid.innerHTML = "<p style='color: var(--text-secondary); width: 100%;'>No hay fotos todavía.</p>";
+        return;
+    }
+
+    currentImageUrls.forEach((url, index) => {
+        const isPrimary = index === 0;
+        const wrapper = document.createElement("div");
+        wrapper.className = `modal-img-wrapper ${isPrimary ? 'primary' : ''}`;
+        
+        wrapper.innerHTML = `
+            <img src="${url}">
+            <div class="modal-img-actions">
+                ${!isPrimary ? `<button onclick="makeImagePrimary(${index})" title="Hacer Principal">⭐</button>` : `<span style="color:#34C759; font-size:14px; padding-top:2px;">Principal</span>`}
+                <button onclick="deleteImageFromList(${index})" title="Eliminar">🗑️</button>
+            </div>
+        `;
+        grid.appendChild(wrapper);
+    });
+}
+
+window.makeImagePrimary = async function(index) {
+    const imgUrl = currentImageUrls.splice(index, 1)[0];
+    currentImageUrls.unshift(imgUrl); // Move to front
+    
+    renderModalImages();
+    await Database.updateProductImages(currentProductId, currentImageUrls);
+};
+
+window.deleteImageFromList = async function(index) {
+    if(!confirm("¿Borrar esta foto?")) return;
+    
+    currentImageUrls.splice(index, 1);
+    renderModalImages();
+    await Database.updateProductImages(currentProductId, currentImageUrls);
+};
+
+// Handle uploading new images from inside the modal
+document.addEventListener("DOMContentLoaded", () => {
+    const modalFileInput = document.getElementById("modal-file-input");
+    if(modalFileInput) {
+        modalFileInput.addEventListener("change", async (e) => {
+            const files = e.target.files;
+            if(!files || files.length === 0) return;
+            
+            const remainingSlots = 3 - currentImageUrls.length;
+            if(files.length > remainingSlots) {
+                alert(`Sólo puedes subir ${remainingSlots} imagen(es) más. Límite de 3 total.`);
+                e.target.value = "";
+                return;
+            }
+
+            // Cambiar UI
+            const labelBtn = modalFileInput.parentElement;
+            const originalText = labelBtn.innerHTML;
+            labelBtn.style.pointerEvents = "none";
+            labelBtn.innerHTML = "⏳ Subiendo y comprimiendo...";
+
+            const imagePromises = Array.from(files).map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = function(event) {
+                        const img = new Image();
+                        img.onload = function() {
+                            const canvas = document.createElement("canvas");
+                            const MAX_WIDTH = 500;
+                            const scaleSize = MAX_WIDTH / img.width;
+                            canvas.width = MAX_WIDTH;
+                            canvas.height = img.height * scaleSize;
+                            const ctx = canvas.getContext("2d");
+                            ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                            resolve(canvas.toDataURL("image/jpeg", 0.65));
+                        };
+                        img.src = event.target.result;
+                    };
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            try {
+                const newUrls = await Promise.all(imagePromises);
+                currentImageUrls = currentImageUrls.concat(newUrls);
+                
+                await Database.updateProductImages(currentProductId, currentImageUrls);
+                renderModalImages();
+                e.target.value = ""; // reset
+            } catch(err) {
+                alert("Error: " + err.message);
+            } finally {
+                labelBtn.style.pointerEvents = "auto";
+                labelBtn.innerHTML = originalText;
+            }
+        });
+    }
+});

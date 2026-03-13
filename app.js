@@ -51,6 +51,7 @@ async function renderCatalog() {
                     target="${isOutOfStock ? '_self' : '_blank'}" 
                     class="ios-btn whatsapp-btn ${isOutOfStock ? 'disabled' : ''}"
                 >
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 6px; vertical-align: text-bottom;"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
                     Pedir por WhatsApp
                 </a>
             `;
@@ -58,6 +59,13 @@ async function renderCatalog() {
         });
     } catch(err) {
         grid.innerHTML = "<p style='color: red; grid-column: 1 / -1; text-align:center;'>Hubo un error al cargar los productos.</p>";
+    } finally {
+        // Ocultar pantalla de carga cuando termine (Incluso si hay error)
+        const loader = document.getElementById("oa-loading");
+        if(loader) {
+            loader.style.opacity = '0';
+            setTimeout(() => loader.style.display = 'none', 500); // 500ms transition 
+        }
     }
 }
 

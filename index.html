@@ -10,6 +10,12 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+
+    <!-- Pantalla de Carga (Loading) -->
+    <div id="oa-loading">
+        <img src="logo.png" alt="Cargando O&A Luxury" />
+    </div>
+
     <!-- Top Navigation Bar -->
     <nav class="ios-nav">
         <div class="nav-content">
@@ -18,8 +24,10 @@
                 <span style="font-weight: 700; font-size: 20px; margin-left: 12px; letter-spacing: -0.5px;">O&A Luxury shop</span>
             </div>
             <div style="display: flex; gap: 16px; align-items: center;">
-                <button id="theme-toggle" class="theme-btn ios-btn" style="width: auto; margin: 0; padding: 6px 14px; font-size: 14px;">🌙 Oscuro</button>
-                <a href="admin.html" class="nav-link">Acceso Admin</a>
+                <button id="theme-toggle" class="theme-btn ios-btn" style="width: auto; margin: 0; padding: 6px 14px; font-size: 14px; display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Oscuro</button>
+                <a href="admin.html" class="nav-link" style="display: inline-flex; align-items: center;" title="Acceso Admin">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </a>
             </div>
         </div>
     </nav>

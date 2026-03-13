@@ -18,8 +18,10 @@
                 <span style="font-weight: 700; font-size: 20px; margin-left: 12px; letter-spacing: -0.5px;">Panel de Admin</span>
             </div>
             <div style="display: flex; gap: 16px; align-items: center;">
-                <button id="theme-toggle" class="theme-btn ios-btn" style="width: auto; margin: 0; padding: 6px 14px; font-size: 14px;">🌙 Oscuro</button>
-                <a href="index.html" class="nav-link">Ver Catálogo</a>
+                <button id="theme-toggle" class="theme-btn ios-btn" style="width: auto; margin: 0; padding: 6px 14px; font-size: 14px; display: inline-flex; align-items: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right: 4px;"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg> Oscuro</button>
+                <a href="index.html" class="nav-link" style="display: inline-flex; align-items: center;" title="Ver Catálogo">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                </a>
             </div>
         </div>
     </nav>
@@ -52,6 +54,8 @@
                 </form>
             </div>
 
+            </div>
+
             <!-- Form to Configure WhatsApp -->
             <div class="ios-card form-card" style="margin-bottom: 24px;">
                 <h2>Configuración de Tienda</h2>
@@ -59,6 +63,17 @@
                     <label for="whatsapp-number" style="display: block; margin-bottom: 8px; font-weight: 600; color: #1C1C1E; font-size: 14px;">Número de WhatsApp (con código de país, ej. 52...):</label>
                     <input type="text" id="whatsapp-number" required class="ios-input" />
                     <button type="submit" class="ios-btn primary-btn" style="background-color: var(--apple-green);">Guardar WhatsApp</button>
+                </form>
+            </div>
+
+            <!-- Import CSV Section -->
+            <div class="ios-card form-card" style="margin-bottom: 24px;">
+                <h2>Importar Inventario Masivo</h2>
+                <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">Sube un archivo de Excel (.csv) para cargar todos tus productos de golpe, sin foto. Después podrás asignar fotos desde la tabla.</p>
+                <form id="csv-form" class="product-form">
+                    <input type="file" id="csv-file" accept=".csv" required class="ios-input" style="padding: 12px; background: #fff;" />
+                    <button type="submit" class="ios-btn secondary-btn" style="background-color: #E5E5EA; color: #000;">Cargar .CSV</button>
+                    <a href="plantilla.csv" download style="display: block; text-align: center; margin-top: 14px; font-size: 14px; color: var(--apple-blue); text-decoration: none; font-weight: 600;">⬇️ Bajar Plantilla de Excel</a>
                 </form>
             </div>
 
@@ -86,6 +101,24 @@
             <button id="logout-btn" class="ios-btn secondary-btn" style="margin-top: 24px; color: #FF3B30;">Cerrar Sesión</button>
         </section>
     </main>
+
+    <!-- Modal for Image Management -->
+    <div id="image-modal" class="modal-overlay">
+        <div class="modal-content">
+            <h3 id="modal-title">Gestionar Fotos</h3>
+            <p style="font-size: 13px; color: var(--text-secondary); margin-bottom: 16px;">Máximo 3 fotos. La primera con borde azul es la principal.</p>
+            
+            <div id="modal-images-grid" class="modal-images-grid">
+                <!-- Images injected via JS -->
+            </div>
+
+            <label class="ios-btn primary-btn" style="cursor: pointer; margin-bottom: 10px;">
+                ➕ Subir más fotos
+                <input type="file" id="modal-file-input" style="display:none;" accept="image/*" multiple>
+            </label>
+            <button class="ios-btn secondary-btn" onclick="closeImageModal()">Cerrar</button>
+        </div>
+    </div>
 
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-compat.js"></script>

@@ -44,11 +44,15 @@ class Database {
             name: product.name,
             price: product.price,
             quantity: product.quantity,
-            imageUrls: product.imageUrls,
+            imageUrls: product.imageUrls || [],
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
         
         await db.collection("products").add(newProd);
+    }
+
+    static async updateProductImages(id, imageUrls) {
+        await db.collection("products").doc(id).update({ imageUrls: imageUrls });
     }
 
     static async updateProductInfo(id, newPrice, newQuantity) {
