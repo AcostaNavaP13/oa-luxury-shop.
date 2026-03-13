@@ -69,43 +69,51 @@ document.addEventListener("DOMContentLoaded", () => {
 
             const btn = e.target.querySelector('.primary-btn');
 
-            if (imageInput.files && imageInput.files[0]) {
-                btn.innerText = "Subiendo archivo a la nube...";
+            if (imageInput.files && imageInput.files.length > 0) {
+                if (imageInput.files.length > 3) {
+                    alert("Por favor, selecciona como máximo 3 imágenes.");
+                    return;
+                }
+
+                btn.innerText = "Subiendo archivo(s) a la nube...";
                 btn.disabled = true;
 
-                const file = imageInput.files[0];
-                const reader = new FileReader();
-                
-                reader.onload = function(event) {
-                    const img = new Image();
-                    img.onload = async function() {
-                        const canvas = document.createElement("canvas");
-                        const MAX_WIDTH = 600;
-                        const scaleSize = MAX_WIDTH / img.width;
-                        canvas.width = MAX_WIDTH;
-                        canvas.height = img.height * scaleSize;
-                        
-                        const ctx = canvas.getContext("2d");
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-                        
-                        const imageUrl = canvas.toDataURL("image/jpeg", 0.75);
-                        
-                        try {
-                            await Database.addProduct({ name, price, quantity, imageUrl });
-                            e.target.reset(); // Limpiar formulario
-                            await renderAdminTable(); // Refrescar vista
-                            alert("Producto registrado correctamente en Firebase");
-                        } catch(err) {
-                            console.error(err);
-                            alert("Error subiendo el producto: " + err.message);
-                        } finally {
-                            btn.innerText = "Guardar Producto";
-                            btn.disabled = false;
-                        }
-                    };
-                    img.src = event.target.result;
-                };
-                reader.readAsDataURL(file);
+                const imagePromises = Array.from(imageInput.files).map(file => {
+                    return new Promise((resolve) => {
+                        const reader = new FileReader();
+                        reader.onload = function(event) {
+                            const img = new Image();
+                            img.onload = function() {
+                                const canvas = document.createElement("canvas");
+                                const MAX_WIDTH = 500;
+                                const scaleSize = MAX_WIDTH / img.width;
+                                canvas.width = MAX_WIDTH;
+                                canvas.height = img.height * scaleSize;
+                                
+                                const ctx = canvas.getContext("2d");
+                                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                                
+                                resolve(canvas.toDataURL("image/jpeg", 0.65));
+                            };
+                            img.src = event.target.result;
+                        };
+                        reader.readAsDataURL(file);
+                    });
+                });
+
+                try {
+                    const imageUrls = await Promise.all(imagePromises);
+                    await Database.addProduct({ name, price, quantity, imageUrls });
+                    e.target.reset(); // Limpiar formulario
+                    await renderAdminTable(); // Refrescar vista
+                    alert("Producto registrado correctamente");
+                } catch(err) {
+                    console.error(err);
+                    alert("Error subiendo el producto: " + err.message);
+                } finally {
+                    btn.innerText = "Guardar Producto";
+                    btn.disabled = false;
+                }
             }
         });
     }
@@ -129,8 +137,10 @@ async function renderAdminTable() {
         products.forEach(p => {
             const tr = document.createElement("tr");
 
+            const firstImage = p.imageUrls ? p.imageUrls[0] : (p.imageUrl || 'https://via.placeholder.com/50?text=IMG');
+
             tr.innerHTML = `
-                <td><img src="${p.imageUrl}" class="table-img" onerror="this.src='https://via.placeholder.com/50?text=IMG'"/></td>
+                <td><img src="${firstImage}" class="table-img" onerror="this.src='https://via.placeholder.com/50?text=IMG'"/></td>
                 <td style="font-weight:600">${p.name}</td>
                 <td>$<input type="number" step="0.01" value="${p.price}" class="ios-input" style="width:80px; margin:0; padding:8px" id="price-${p.id}" /></td>
                 <td>

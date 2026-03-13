@@ -129,6 +129,21 @@ body {
     background-color: #f9f9f9;
 }
 
+.image-scroller {
+    display: flex;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scrollbar-width: none;
+    border-radius: 14px;
+    background-color: #f9f9f9;
+}
+.image-scroller::-webkit-scrollbar { display: none; }
+.image-scroller img.product-image {
+    flex: 0 0 100%;
+    scroll-snap-align: center;
+    border-radius: 0;
+}
+
 .product-header {
     margin-top: 14px;
     display: flex;
@@ -298,6 +313,7 @@ body.dark-theme .ios-table th { background-color: #2C2C2E; border-color: #38383A
 body.dark-theme .ios-table td { border-color: #38383A; }
 body.dark-theme .secondary-btn { background-color: #2C2C2E; color: #FFF; }
 body.dark-theme label { color: #FFF !important; }
+body.dark-theme .image-scroller { background-color: #2C2C2E; }
 
 /* Invertir el logo para modo oscuro y quitarle el fondo blanco (que ahora se volvió negro) */
 body.dark-theme .brand-logo {

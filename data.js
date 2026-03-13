@@ -44,7 +44,7 @@ class Database {
             name: product.name,
             price: product.price,
             quantity: product.quantity,
-            imageUrl: product.imageUrl,
+            imageUrls: product.imageUrls,
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };
         

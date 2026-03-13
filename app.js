@@ -26,10 +26,19 @@ async function renderCatalog() {
 
         products.forEach(product => {
             const isOutOfStock = product.quantity <= 0;
+            const images = product.imageUrls || [product.imageUrl];
+            let imagesHTML = "";
+            images.forEach((img) => {
+                imagesHTML += `<img src="${img}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/300?text=IMG'">`;
+            });
+
             const card = document.createElement("div");
             card.className = "ios-card";
             card.innerHTML = `
-                <img src="${product.imageUrl}" alt="${product.name}" class="product-image" onerror="this.src='https://via.placeholder.com/300?text=IMG'">
+                <div class="image-scroller">
+                    ${imagesHTML}
+                </div>
+                ${images.length > 1 ? '<p style="text-align:center; font-size:11px; color:var(--text-secondary); margin-top:6px; margin-bottom:-4px;">Desliza para ver más ↔</p>' : ''}
                 <div class="product-header">
                     <h3 class="product-title">${product.name}</h3>
                     <p class="product-price">$${Number(product.price).toFixed(2)}</p>
