@@ -44,6 +44,9 @@ class Database {
             name: product.name,
             price: product.price,
             quantity: product.quantity,
+            category: product.category || "General",
+            brand: product.brand || "Generica",
+            size: product.size || "Unitalla",
             imageUrls: product.imageUrls || [],
             createdAt: firebase.firestore.FieldValue.serverTimestamp()
         };

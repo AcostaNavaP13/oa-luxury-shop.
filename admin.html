@@ -45,11 +45,22 @@
             <div class="ios-card form-card">
                 <h2>Añadir Nuevo Producto</h2>
                 <form id="product-form" class="product-form">
-                    <input type="text" id="prod-name" placeholder="Nombre del producto" required class="ios-input" />
-                    <input type="number" id="prod-price" placeholder="Precio ($)" step="0.01" required class="ios-input" />
-                    <input type="number" id="prod-qty" placeholder="Cantidad Disponible" required class="ios-input" />
+                    <input type="text" id="prod-name" placeholder="Nombre del producto" required class="ios-input" style="margin-bottom: 10px;" />
+                    
+                    <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                        <input type="number" id="prod-price" placeholder="Precio ($)" step="0.01" required class="ios-input" style="margin-bottom: 0;" />
+                        <input type="number" id="prod-qty" placeholder="Stock" required class="ios-input" style="margin-bottom: 0;" />
+                    </div>
+
+                    <div style="display: flex; gap: 10px; margin-bottom: 16px;">
+                        <input type="text" id="prod-category" placeholder="Artículo (ej. Playera)" required class="ios-input" style="margin-bottom: 0;" />
+                        <input type="text" id="prod-brand" placeholder="Marca (ej. O&A)" required class="ios-input" style="margin-bottom: 0;" />
+                        <input type="text" id="prod-size" placeholder="Tallas (ej. S, M, L)" required class="ios-input" style="margin-bottom: 0;" />
+                    </div>
+
                     <label for="prod-image" style="display: block; margin-bottom: 8px; font-weight: 600; color: #1C1C1E; font-size: 14px;">Imagen del producto (Máximo 3):</label>
-                    <input type="file" id="prod-image" accept="image/*" multiple required class="ios-input" style="padding: 12px; background: #fff;" />
+                    <input type="file" id="prod-image" accept="image/*" multiple required class="ios-input" style="padding: 12px; background: #fff; margin-bottom: 16px;" />
+                    
                     <button type="submit" class="ios-btn primary-btn">Guardar Producto</button>
                 </form>
             </div>
@@ -69,7 +80,7 @@
             <!-- Import CSV Section -->
             <div class="ios-card form-card" style="margin-bottom: 24px;">
                 <h2>Importar Inventario Masivo</h2>
-                <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">Sube un archivo de Excel (.csv) para cargar todos tus productos de golpe, sin foto. Después podrás asignar fotos desde la tabla.</p>
+                <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 12px;">Sube un archivo de Excel (.csv) para cargar todos tus productos de golpe, sin foto. Columnas requeridas: Nombre, Precio, Cantidad, Articulo, Marca, Talla.</p>
                 <form id="csv-form" class="product-form">
                     <input type="file" id="csv-file" accept=".csv" required class="ios-input" style="padding: 12px; background: #fff;" />
                     <button type="submit" class="ios-btn secondary-btn" style="background-color: #E5E5EA; color: #000;">Cargar .CSV</button>

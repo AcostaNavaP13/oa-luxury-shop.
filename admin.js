@@ -71,6 +71,11 @@ document.addEventListener("DOMContentLoaded", () => {
             const name = document.getElementById("prod-name").value;
             const price = parseFloat(document.getElementById("prod-price").value);
             const quantity = parseInt(document.getElementById("prod-qty").value, 10);
+            
+            const category = document.getElementById("prod-category").value;
+            const brand = document.getElementById("prod-brand").value;
+            const size = document.getElementById("prod-size").value;
+
             const imageInput = document.getElementById("prod-image");
 
             const btn = e.target.querySelector('.primary-btn');
@@ -109,7 +114,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 try {
                     const imageUrls = await Promise.all(imagePromises);
-                    await Database.addProduct({ name, price, quantity, imageUrls });
+                    await Database.addProduct({ name, price, quantity, category, brand, size, imageUrls });
                     e.target.reset(); // Limpiar formulario
                     await renderAdminTable(); // Refrescar vista
                     alert("Producto registrado correctamente");
@@ -141,19 +146,31 @@ document.addEventListener("DOMContentLoaded", () => {
                 const rows = text.split('\n');
                 let count = 0;
                 
-                // Empezar desde i=1 para evitar los nombres de las columnas (Nombre,Precio,Cantidad)
+                // Empezar desde i=1 para evitar los nombres de las columnas
                 for(let i = 1; i < rows.length; i++) {
                     const line = rows[i].trim();
                     if (!line) continue;
                     const row = line.split(',');
-                    // Tiene que tener 3 columnas minimo
-                    if (row.length >= 3) {
+                    // Tiene que tener 6 columnas minimo
+                    if (row.length >= 6) {
+                        const name = row[0].trim();
+                        const price = parseFloat(row[1]);
+                        const qty = parseInt(row[2], 10);
+                        const category = row[3].trim();
+                        const brand = row[4].trim();
+                        const size = row[5].trim();
+                        
+                        if (name && !isNaN(price) && !isNaN(qty)) {
+                            await Database.addProduct({ name, price, quantity: qty, category, brand, size, imageUrls: [] });
+                            count++;
+                        }
+                    } else if (row.length >= 3) {
+                        // Soporte para el CSV antiguo de 3 columnas
                         const name = row[0].trim();
                         const price = parseFloat(row[1]);
                         const qty = parseInt(row[2], 10);
                         if (name && !isNaN(price) && !isNaN(qty)) {
-                            // Subimos producto sin imagenes inicialmente
-                            await Database.addProduct({ name: name, price: price, quantity: qty, imageUrls: [] });
+                            await Database.addProduct({ name, price, quantity: qty, category: "General", brand: "Generica", size: "Unitalla", imageUrls: [] });
                             count++;
                         }
                     }
@@ -192,7 +209,12 @@ async function renderAdminTable() {
 
             tr.innerHTML = `
                 <td><img src="${firstImage}" class="table-img" onerror="this.src='https://via.placeholder.com/50?text=IMG'"/></td>
-                <td style="font-weight:600">${p.name}</td>
+                <td>
+                    <div style="font-weight:600">${p.name}</div>
+                    <div style="font-size:11px; color:#8E8E93; margin-top:2px;">
+                        ${p.category || 'N/A'} • ${p.brand || 'N/A'} • Talla: ${p.size || 'N/A'}
+                    </div>
+                </td>
                 <td>$<input type="number" step="0.01" value="${p.price}" class="ios-input" style="width:80px; margin:0; padding:8px" id="price-${p.id}" /></td>
                 <td>
                     <input type="number" value="${p.quantity}" class="ios-input" style="width:70px; margin:0; padding:8px" id="stock-${p.id}" />
